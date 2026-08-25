@@ -1,0 +1,206 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #1a1a1a;
+  color: #fff;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.app {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  max-width: 780px;
+  width: 100%;
+  align-items: flex-start;
+}
+
+/* ── Calculator panel ─────────────────────────── */
+.calc-panel {
+  flex: 0 0 440px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ── Display ──────────────────────────────────── */
+.display {
+  background: #111;
+  border-radius: 12px;
+  padding: 12px 16px 14px;
+  min-height: 108px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+
+.deg-toggle {
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #5de85d;
+  background: #1a3a1a;
+  padding: 2px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s;
+}
+.deg-toggle:hover { background: #234a23; }
+
+.equation-line {
+  text-align: right;
+  color: #777;
+  font-size: 15px;
+  min-height: 24px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-top: 20px;
+}
+
+.result-line {
+  text-align: right;
+  font-size: 36px;
+  font-weight: 700;
+  color: #fff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+.result-line.error { color: #ff6b6b; font-size: 18px; word-break: break-word; white-space: normal; }
+
+/* ── Button grid ──────────────────────────────── */
+/*
+  6 rows × 5 cols, each cell 62px tall, 6px gap.
+  The "=" button spans rows 5–6, col 5.
+  Row/col numbering in CSS Grid is 1-based.
+
+  Layout (rows 1-6, cols 1-5):
+    Row1: sin cos tan √x  π
+    Row2: x²  xʸ  (   )   C
+    Row3: 7   8   9   ÷   ⌫
+    Row4: 4   5   6   ×   CE
+    Row5: 1   2   3   −   =  ← = spans rows 5-6
+    Row6: +/− 0   .   +   (= continues)
+*/
+
+.btn-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(6, 62px);
+  gap: 6px;
+}
+
+.btn {
+  border: none;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 16px;
+  cursor: pointer;
+  transition: filter 0.12s, transform 0.08s;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.btn:active { transform: scale(0.93); }
+.btn:hover  { filter: brightness(1.2); }
+
+/* The = button must span 2 rows and be in col 5 */
+.btn-tall {
+  grid-row: span 2;
+}
+
+/* Colours */
+.btn-digit  { background: #3a3a3a; color: #fff; }
+.btn-op     { background: #252550; color: #7aabff; font-size: 20px; }
+.btn-clear  { background: #3d1e1e; color: #ff7070; }
+.btn-func   { background: #1e301e; color: #6ee06e; font-size: 14px; }
+.btn-paren  { background: #26264a; color: #c0aaff; font-size: 20px; }
+.btn-const  { background: #1e301e; color: #6ee06e; font-size: 18px; }
+.btn-equals { background: #0078d4; color: #fff; font-size: 26px; font-weight: 700; border-radius: 10px; }
+
+/* ── History panel ────────────────────────────── */
+.history-panel {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: #161616;
+  border-radius: 12px;
+  overflow: hidden;
+  /* match calc height: display (108px) + gap (10px) + grid (6*62 + 5*6) = 118 + 402 = 520px */
+  max-height: 520px;
+}
+
+.history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #777;
+  border-bottom: 1px solid #242424;
+  flex-shrink: 0;
+}
+
+.clear-hist {
+  background: none;
+  border: 1px solid #3d1e1e;
+  color: #ff7070;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+.clear-hist:hover { background: #3d1e1e; }
+
+.history-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 0;
+  scrollbar-width: thin;
+  scrollbar-color: #333 transparent;
+}
+.history-list::-webkit-scrollbar { width: 4px; }
+.history-list::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+
+.history-item {
+  padding: 8px 12px;
+  font-size: 13px;
+  color: #aaa;
+  cursor: pointer;
+  border-bottom: 1px solid #1e1e1e;
+  word-break: break-all;
+  transition: background 0.12s, color 0.12s;
+}
+.history-item:hover { background: #222; color: #fff; }
+
+.history-empty {
+  padding: 24px 12px;
+  font-size: 12px;
+  color: #3a3a3a;
+  text-align: center;
+}
+
+/* ── Responsive ───────────────────────────────── */
+@media (max-width: 640px) {
+  .app { flex-direction: column; padding: 8px; gap: 8px; }
+  .calc-panel { flex: unset; width: 100%; }
+  .history-panel { max-height: 200px; }
+  .btn-grid { grid-template-rows: repeat(6, 54px); }
+  .result-line { font-size: 28px; }
+}
